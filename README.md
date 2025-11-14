@@ -61,9 +61,140 @@ A construção do sistema segue quatro componentes principais:
 
 ### 2. Modelos de Dados
 
--   `Item` --- ID, nome, quantidade e categoria\
--   `Inventario` --- `Map String Item`\
--   `LogEntry` --- ação, horário e status
+Esta seção descreve todos os modelos utilizados pelo sistema, seus campos, invariantes, estruturas e exemplos. Esses modelos representam o domínio do inventário e o sistema de auditoria, garantindo persistência, consistência e rastreamento de todas as operações realizadas.
+
+---
+
+## `Item`
+Representa um produto cadastrado no inventário.
+
+- **Campos**
+  - `itemID :: String` — Identificador único do item.  
+  - `nome :: String` — Nome legível do item.  
+  - `quantidade :: Int` — Quantidade disponível em estoque (>= 0).  
+  - `categoria :: String` — Categoria à qual o item pertence.  
+
+- **Invariantes**
+  - `itemID` deve ser único no inventário.  
+  - `quantidade` nunca pode ser negativa.  
+  - `nome` e `categoria` devem ser válidos (não vazios).  
+
+- **Exemplo**
+  ```haskell
+  Item { itemID = "A01", nome = "Teclado", quantidade = 10, categoria = "Periféricos" }
+Inventario
+Armazena todos os itens registrados no sistema.
+
+Tipo
+
+haskell
+Copiar código
+type Inventario = Map String Item
+Propriedades
+
+Cada chave do mapa corresponde ao itemID.
+
+Permite operações de busca, inserção, remoção e atualização via Data.Map.
+
+Persistido em Inventario.dat usando serialização textual (show / read).
+
+Comportamento
+
+Carregado automaticamente ao iniciar o programa.
+
+Atualizado e gravado a cada operação que modifica o estado.
+
+AcaoLog
+Enum que representa o tipo da ação auditada.
+
+Valores
+
+Add — Inserção de item.
+
+Remove — Remoção de quantidade.
+
+Update — Alteração de quantidade.
+
+QueryFail — Erro de operação.
+
+StatusLog
+Indica o resultado da operação.
+
+Valores
+
+Sucesso
+
+Falha String — Inclui mensagem explicando o motivo da falha.
+
+LogEntry
+Representa uma linha de registro no arquivo de auditoria.
+
+Campos
+
+timestamp :: UTCTime — Momento da operação.
+
+acao :: AcaoLog — Tipo da ação realizada.
+
+detalhes :: String — Descrição da operação.
+
+status :: StatusLog — Sucesso ou falha.
+
+Persistência
+
+Salvo em Auditoria.log no formato textual.
+
+Exemplo
+
+haskell
+Copiar código
+LogEntry
+  { timestamp = 2025-11-14 18:00:00 UTC
+  , acao = Remove
+  , detalhes = "Tentativa de remover 15 unidades do item T01"
+  , status = Falha "Estoque insuficiente"
+  }
+ResultadoOperacao
+Retorno padrão de funções que alteram o estado.
+
+Definição
+
+haskell
+Copiar código
+type ResultadoOperacao = (Inventario, LogEntry)
+Descrição
+
+O novo estado do inventário.
+
+O log gerado pela operação.
+
+3. Regras de Validação
+Adicionar item
+
+Falha se o item já existir.
+
+Quantidade inicial deve ser >= 0.
+
+Remover quantidade
+
+Item deve existir.
+
+Não pode remover mais do que existe.
+
+Atualizar quantidade
+
+Nunca pode resultar em número negativo.
+
+Deletar item
+
+Falha se o item não existir.
+
+Quando uma falha ocorre:
+
+O inventário permanece inalterado
+
+Um LogEntry com Falha é registrado
+
+
 
 ### 3. Lógica Pura
 
@@ -177,5 +308,17 @@ Saída:
 
 ### Cenario 1 : 
 ![WhatsApp Image 2025-11-14 at 19 31 06_c08aef2f](https://github.com/user-attachments/assets/8c8ff5bb-3a23-4584-8449-1420e0dfa515)
+
+### Cenario 2: 
+![WhatsApp Image 2025-11-14 at 19 40 15_8358878e](https://github.com/user-attachments/assets/6abedc7f-8b05-4613-ade3-67ede5bb0662)
+![WhatsApp Image 2025-11-14 at 19 42 22_72a1a1c0](https://github.com/user-attachments/assets/f802e20a-7483-4bda-9695-21d8024b966b)
+![WhatsApp Image 2025-11-14 at 19 43 25_e7bd3c71](https://github.com/user-attachments/assets/a8bfb59f-3bce-4da9-aa38-ce46a9e86887)
+![WhatsApp Image 2025-11-14 at 19 44 16_bc8cfd50](https://github.com/user-attachments/assets/c7d26db1-26a9-4a26-969c-cf6011a332cb)
+
+### Cenario 3: 
+![WhatsApp Image 2025-11-14 at 19 53 48_b57e6682](https://github.com/user-attachments/assets/6116592f-4b40-4af3-9d90-8c7479901a51)
+
+
+
 
 
