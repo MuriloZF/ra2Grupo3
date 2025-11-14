@@ -82,118 +82,113 @@ Representa um produto cadastrado no inventário.
 - **Exemplo**
   ```haskell
   Item { itemID = "A01", nome = "Teclado", quantidade = 10, categoria = "Periféricos" }
+O módulo Inventario é responsável por armazenar e gerenciar todos os itens registrados no sistema, fornecendo operações de CRUD com auditoria completa.
+
+Estruturas de Dados
 Inventario
-Armazena todos os itens registrados no sistema.
-
-Tipo
-
 haskell
-Copiar código
 type Inventario = Map String Item
-Propriedades
+Propriedades: Cada chave do mapa corresponde ao itemID
 
-Cada chave do mapa corresponde ao itemID.
-
-Permite operações de busca, inserção, remoção e atualização via Data.Map.
-
-Persistido em Inventario.dat usando serialização textual (show / read).
-
-Comportamento
-
-Carregado automaticamente ao iniciar o programa.
-
-Atualizado e gravado a cada operação que modifica o estado.
+Persistência: Armazenado em Inventario.dat usando serialização textual (show/read)
 
 AcaoLog
-Enum que representa o tipo da ação auditada.
+Enum que representa o tipo da ação auditada:
 
-Valores
-
-Add — Inserção de item.
-
-Remove — Remoção de quantidade.
-
-Update — Alteração de quantidade.
-
-QueryFail — Erro de operação.
-
+Valor	Descrição
+Add	Inserção de item
+Remove	Remoção de quantidade
+Update	Alteração de quantidade
+QueryFail	Erro de operação
 StatusLog
-Indica o resultado da operação.
-
-Valores
+Indica o resultado da operação:
 
 Sucesso
 
-Falha String — Inclui mensagem explicando o motivo da falha.
+Falha String — Inclui mensagem explicando o motivo da falha
 
 LogEntry
-Representa uma linha de registro no arquivo de auditoria.
-
-Campos
-
-timestamp :: UTCTime — Momento da operação.
-
-acao :: AcaoLog — Tipo da ação realizada.
-
-detalhes :: String — Descrição da operação.
-
-status :: StatusLog — Sucesso ou falha.
-
-Persistência
-
-Salvo em Auditoria.log no formato textual.
-
-Exemplo
+Representa uma linha de registro no arquivo de auditoria:
 
 haskell
-Copiar código
-LogEntry
-  { timestamp = 2025-11-14 18:00:00 UTC
-  , acao = Remove
-  , detalhes = "Tentativa de remover 15 unidades do item T01"
-  , status = Falha "Estoque insuficiente"
-  }
+LogEntry {
+    timestamp :: UTCTime,    -- Momento da operação
+    acao :: AcaoLog,         -- Tipo da ação realizada
+    detalhes :: String,      -- Descrição da operação
+    status :: StatusLog      -- Sucesso ou falha
+}
 ResultadoOperacao
-Retorno padrão de funções que alteram o estado.
-
-Definição
+Retorno padrão de funções que alteram o estado:
 
 haskell
-Copiar código
 type ResultadoOperacao = (Inventario, LogEntry)
-Descrição
+Comportamento do Sistema
+Persistência
+Inventário: Carregado automaticamente ao iniciar o programa
 
-O novo estado do inventário.
+Auditoria: Atualizado e gravado a cada operação modificadora
 
-O log gerado pela operação.
+Arquivos:
 
-3. Regras de Validação
-Adicionar item
+Inventario.dat - Estado do inventário
 
-Falha se o item já existir.
+Auditoria.log - Registros de auditoria em formato textual
 
-Quantidade inicial deve ser >= 0.
+Operações Suportadas
+Busca de itens
 
-Remover quantidade
+Inserção de novos itens
 
-Item deve existir.
+Remoção de itens/quantidades
 
-Não pode remover mais do que existe.
+Atualização de informações
 
-Atualizar quantidade
+Regras de Validação
+Adicionar Item
+Falha se o item já existir
 
-Nunca pode resultar em número negativo.
+Quantidade inicial deve ser >= 0
 
-Deletar item
+Remover Quantidade
+Item deve existir
 
-Falha se o item não existir.
+Não pode remover mais do que existe
 
-Quando uma falha ocorre:
+Atualizar Quantidade
+Nunca pode resultar em número negativo
 
-O inventário permanece inalterado
+Deletar Item
+Item deve existir
 
-Um LogEntry com Falha é registrado
+Comportamento em Caso de Falha
+Quando uma operação falha:
 
+Inventário permanece inalterado
+
+LogEntry com status Falha é registrado
+
+Exemplo de Log
+haskell
+LogEntry {
+    timestamp = 2025-11-14 18:00:00 UTC,
+    acao = Remove,
+    detalhes = "Tentativa de remover 15 unidades do item T01",
+    status = Falha "Estoque insuficiente"
+}
+Implementação
+Operações via Data.Map
+O sistema utiliza Data.Map para operações eficientes de:
+
+Busca por itemID
+
+Inserção e remoção
+
+Atualização de valores
+
+Serialização
+Entrada/Saída: Serialização textual usando show e read
+
+Formato: Textual legível para fácil debug e manutenção
 
 
 ### 3. Lógica Pura
