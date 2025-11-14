@@ -82,13 +82,13 @@ Representa um produto cadastrado no inventário.
 - **Exemplo**
   ```haskell
   Item { itemID = "A01", nome = "Teclado", quantidade = 10, categoria = "Periféricos" }
-O módulo Inventario é responsável por armazenar e gerenciar todos os itens registrados no sistema, fornecendo operações de CRUD com auditoria completa.
+- O módulo Inventario é responsável por armazenar e gerenciar todos os itens registrados no sistema, fornecendo operações de CRUD com auditoria completa.
 
-Estruturas de Dados
-Inventario
-haskell
-type Inventario = Map String Item
-Propriedades: Cada chave do mapa corresponde ao itemID
+- Estruturas de Dados
+- Inventario
+- haskell
+- type Inventario = Map String Item
+- Propriedades: Cada chave do mapa corresponde ao itemID
 
 Persistência: Armazenado em Inventario.dat usando serialização textual (show/read)
 
