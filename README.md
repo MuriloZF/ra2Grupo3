@@ -1,12 +1,20 @@
-# Inventário --- Projeto em Haskell
+# Inventário --- Projeto em Haskell -- Grupo 2
 
 ## Instituição
 
-**Pontifiicia Universidade Catolica do Parana**
+**Pontifícia Universidade Católica do Paraná**
+
+## Curso
+
+**Ciência da Computação**
+
+## Turma
+
+**4° Semestre, Turma B**
 
 ## Disciplina
 
-**Ciencia Da Computacao**
+**Programação Lógica e Funcional**
 
 ## Professor
 
