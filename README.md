@@ -59,136 +59,158 @@ A construção do sistema segue quatro componentes principais:
 -   Persistência\
 -   Interação com usuário
 
-### 2. Modelos de Dados
+# 2. Modelos de Dados
 
-Esta seção descreve todos os modelos utilizados pelo sistema, seus campos, invariantes, estruturas e exemplos. Esses modelos representam o domínio do inventário e o sistema de auditoria, garantindo persistência, consistência e rastreamento de todas as operações realizadas.
+Esta seção descreve todos os modelos utilizados pelo sistema, seus
+campos, invariantes, estruturas e exemplos. Esses modelos representam o
+domínio do inventário e o sistema de auditoria, garantindo persistência,
+consistência e rastreamento das operações realizadas.
 
----
+------------------------------------------------------------------------
 
-## `Item`
-Representa um produto cadastrado no inventário.
+### **Item**
 
-- **Campos**
-  - `itemID :: String` — Identificador único do item.  
-  - `nome :: String` — Nome legível do item.  
-  - `quantidade :: Int` — Quantidade disponível em estoque (>= 0).  
-  - `categoria :: String` — Categoria à qual o item pertence.  
+Representa um produto armazenado no inventário.
 
-- **Invariantes**
-  - `itemID` deve ser único no inventário.  
-  - `quantidade` nunca pode ser negativa.  
-  - `nome` e `categoria` devem ser válidos (não vazios).  
+#### **Campos**
 
-- **Exemplo**
-  ```haskell
-  Item { itemID = "A01", nome = "Teclado", quantidade = 10, categoria = "Periféricos" }
-- O módulo Inventario é responsável por armazenar e gerenciar todos os itens registrados no sistema, fornecendo operações de CRUD com auditoria completa.
+-   `itemID :: String` --- Identificador único do item.\
+    **Invariante:** não pode se repetir no inventário.
+-   `nome :: String` --- Nome do item cadastrado.
+-   `quantidade :: Int` --- Quantidade disponível em estoque.\
+    **Invariante:** sempre ≥ 0.
+-   `categoria :: String` --- Categoria organizacional (ex: Eletrônicos,
+    Ferramentas).
 
-- Estruturas de Dados
-- Inventario
-- haskell
-- type Inventario = Map String Item
-- Propriedades: Cada chave do mapa corresponde ao itemID
+#### **Estrutura (Haskell)**
 
-- Persistência: Armazenado em Inventario.dat usando serialização textual (show/read)
+``` haskell
+data Item = Item {
+  itemID :: String,
+  nome :: String,
+  quantidade :: Int,
+  categoria :: String
+} deriving (Show, Read)
+```
 
-- AcaoLog
-- Enum que representa o tipo da ação auditada:
+#### **Exemplo**
 
-- Valor	Descrição
-- Add	Inserção de item
-- Remove	Remoção de quantidade
-- Update	Alteração de quantidade
-- QueryFail	Erro de operação
-- StatusLog
-- Indica o resultado da operação:
+``` haskell
+Item "A01" "Mouse Gamer" 15 "Periféricos"
+```
 
-- Sucesso
+------------------------------------------------------------------------
 
-- Falha String — Inclui mensagem explicando o motivo da falha
+### **Inventario**
 
-- LogEntry
-- Representa uma linha de registro no arquivo de auditoria:
+Representa o conjunto completo de itens cadastrados.
 
-- haskell
-- LogEntry {
-    - timestamp :: UTCTime,    -- Momento da operação
-    - acao :: AcaoLog,         -- Tipo da ação realizada
-    - detalhes :: String,      -- Descrição da operação
-    - status :: StatusLog      -- Sucesso ou falha
-}
-- ResultadoOperacao
-- Retorno padrão de funções que alteram o estado:
+#### **Definição**
 
-- haskell
-- type ResultadoOperacao = (Inventario, LogEntry)
-- Comportamento do Sistema
-- Persistência
-- Inventário: Carregado automaticamente ao iniciar o programa
+``` haskell
+type Inventario = Map String Item
+```
 
-- Auditoria: Atualizado e gravado a cada operação modificadora
+Significa que o inventário é um mapa onde: - **Chave** = ItemID
+(`String`) - **Valor** = Estrutura `Item`
 
-- Arquivos:
+#### **Invariantes**
 
-- Inventario.dat - Estado do inventário
+-   Cada chave deve ser única.
+-   Cada item deve sempre manter suas invariantes internas.
 
-- Auditoria.log - Registros de auditoria em formato textual
+------------------------------------------------------------------------
 
-- Operações Suportadas
-- Busca de itens
+### **AcaoLog**
 
-- Inserção de novos itens
+Enumeração que identifica o tipo de operação registrada no log.
 
-- Remoção de itens/quantidades
+#### **Definição**
 
-- Atualização de informações
+``` haskell
+data AcaoLog = Add | Remove | Update | QueryFail
+  deriving (Show, Read, Eq)
+```
 
-- Regras de Validação
-- Adicionar Item
-- Falha se o item já existir
+#### **Possíveis ações**
 
-- Quantidade inicial deve ser >= 0
+-   `Add` --- inclusão de item.
+-   `Remove` --- remoção (parcial ou total).
+-   `Update` --- atualização de quantidade.
+-   `QueryFail` --- operação que falhou.
 
-- Remover Quantidade
-- Item deve existir
+------------------------------------------------------------------------
 
-- Não pode remover mais do que existe
+### **StatusLog**
 
-- Atualizar Quantidade
-- Nunca pode resultar em número negativo
+Representa o estado final de uma operação.
 
-- Deletar Item
-- Item deve existir
+#### **Definição**
 
-- Comportamento em Caso de Falha
-- Quando uma operação falha:
+``` haskell
+data StatusLog = Sucesso | Falha String
+  deriving (Show, Read)
+```
 
-- Inventário permanece inalterado
+#### **Significado**
 
-- LogEntry com status Falha é registrado
+-   `Sucesso` --- operação concluída sem erros.
+-   `Falha msg` --- operação rejeitada, com mensagem detalhada.
 
-- Exemplo de Log
-- haskell
-- LogEntry {
-  -  timestamp = 2025-11-14 18:00:00 UTC,
-   - acao = Remove,
-   -  detalhes = "Tentativa de remover 15 unidades do item T01",
-- status = Falha "Estoque insuficiente"
-}
-- Implementação
-- Operações via Data.Map
-- O sistema utiliza Data.Map para operações eficientes de:
+------------------------------------------------------------------------
 
-- Busca por itemID
+### **LogEntry**
 
-- Inserção e remoção
+Registra cada operação para fins de auditoria.
 
-- Atualização de valores
+#### **Campos**
 
-- Serialização
-- Entrada/Saída: Serialização textual usando show e read
+-   `timestamp :: UTCTime` --- Data e hora da operação.
+-   `acao :: AcaoLog` --- Tipo da ação executada.
+-   `detalhes :: String` --- Mensagem explicativa (ID do item, valores,
+    etc.).
+-   `status :: StatusLog` --- Resultado da operação.
 
--Formato: Textual legível para fácil debug e manutenção
+#### **Estrutura**
+
+``` haskell
+data LogEntry = LogEntry {
+  timestamp :: UTCTime,
+  acao :: AcaoLog,
+  detalhes :: String,
+  status :: StatusLog
+} deriving (Show, Read)
+```
+
+#### **Exemplo**
+
+``` haskell
+LogEntry
+  2025-11-14 20:00:31
+  Add
+  "Item ID[A01] Nome[Mouse Gamer] adicionado"
+  Sucesso
+```
+
+------------------------------------------------------------------------
+
+### **ResultadoOperacao**
+
+Estrutura intermediária usada para separar lógica pura de IO.
+
+#### **Definição**
+
+``` haskell
+type ResultadoOperacao = (Inventario, LogEntry)
+```
+
+#### **Significado**
+
+Sempre que uma operação é bem-sucedida, ela retorna: - O inventário
+modificado - O log correspondente
+
+
+
 
 
 ### 3. Lógica Pura
