@@ -30,7 +30,38 @@ import Data.List (sortBy, group, sort, isInfixOf, isPrefixOf, tails)
 
 import Data.Ord (comparing, Down(..))
 
+-- Configura encoding para UTF-8 para evitar erros no windowss
+setupEncoding :: IO ()
+setupEncoding = do
+  hSetEncoding stdout utf8
+  hSetEncoding stdin utf8
+  hSetEncoding stderr utf8
 
+-- TIPOS DE DADOS
+
+data Item = Item {
+  itemID :: String,
+  nome :: String,
+  quantidade :: Int,
+  categoria :: String
+} deriving (Show, Read)
+
+type Inventario = Map String Item
+
+data AcaoLog = Add | Remove | Update | QueryFail
+  deriving (Show, Read, Eq)
+
+data StatusLog = Sucesso | Falha String
+  deriving (Show, Read)
+
+data LogEntry = LogEntry {
+  timestamp :: UTCTime,
+  acao :: AcaoLog,
+  detalhes :: String,
+  status :: StatusLog
+} deriving (Show, Read)
+
+type ResultadoOperacao = (Inventario, LogEntry)
 
 -- Configura encoding para UTF-8 (evita erros no Windows)
 
