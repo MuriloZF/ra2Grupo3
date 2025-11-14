@@ -1,0 +1,21 @@
+LogEntry {timestamp = 2025-11-10 20:35:44.4188446 UTC, acao = Add, detalhes = "Item ID[100] Nome[hussein] adicionado", status = Sucesso}
+LogEntry {timestamp = 2025-11-10 20:36:49.2379116 UTC, acao = Update, detalhes = "Atualizado Item ID[2] Nome[RTX 5090] para 150", status = Sucesso}
+LogEntry {timestamp = 2025-11-10 20:37:02.7837511 UTC, acao = Update, detalhes = "Atualizado Item ID[2] Nome[RTX 5090] para 165", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:05:09.4363091 UTC, acao = Add, detalhes = "Item ID[test123] Nome[TesteItem] adicionado", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:13:43.3870207 UTC, acao = Remove, detalhes = "Item ID[1] Nome[Notebook Dell] deletado completamente", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:14:29.6889896 UTC, acao = Add, detalhes = "Item ID[1] Nome[Lenovo Legion 7i] adicionado", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:14:39.1064118 UTC, acao = Update, detalhes = "Atualizado Item ID[1] Nome[Lenovo Legion 7i] para 200", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:17:42.4701173 UTC, acao = QueryFail, detalhes = "Item nao encontrado", status = Falha "Item nao encontrado"}
+LogEntry {timestamp = 2025-11-11 18:30:18.0918646 UTC, acao = Add, detalhes = "Item ID[11] Nome[Sony Vaio Fit 15S] adicionado", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:30:24.1241655 UTC, acao = Update, detalhes = "Atualizado Item ID[11] Nome[Sony Vaio Fit 15S] para 12", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:30:28.0369309 UTC, acao = Update, detalhes = "Atualizado Item ID[11] Nome[Sony Vaio Fit 15S] para 13", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:30:34.602469 UTC, acao = Remove, detalhes = "Removido 1 do Item ID[11] Nome[Sony Vaio Fit 15S]", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:30:46.371488 UTC, acao = Remove, detalhes = "Item ID[9] Nome[Webcam HD] deletado completamente", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:31:05.7064546 UTC, acao = QueryFail, detalhes = "Item ja existe", status = Falha "Item ja existe"}
+LogEntry {timestamp = 2025-11-11 18:31:13.960936 UTC, acao = Add, detalhes = "Item ID[9] Nome[kajdj] adicionado", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:33:25.8624135 UTC, acao = Remove, detalhes = "Removido 200 do Item ID[1] Nome[Lenovo Legion 7i]", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:33:43.2388167 UTC, acao = QueryFail, detalhes = "Estoque insuficiente", status = Falha "Estoque insuficiente"}
+LogEntry {timestamp = 2025-11-11 18:33:57.9739629 UTC, acao = Update, detalhes = "Atualizado Item ID[1] Nome[Lenovo Legion 7i] para 0", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:35:36.9442848 UTC, acao = Remove, detalhes = "Item ID[1] Nome[Lenovo Legion 7i] deletado completamente", status = Sucesso}
+LogEntry {timestamp = 2025-11-11 18:36:05.4990901 UTC, acao = QueryFail, detalhes = "Item nao encontrado", status = Falha "Item nao encontrado"}
+LogEntry {timestamp = 2025-11-14 20:29:12.8954003 UTC, acao = QueryFail, detalhes = "Item ja existe", status = Falha "Item ja existe"}
