@@ -174,3 +174,8 @@ Saída:
     Total de operacoes bem-sucedidas: 3
     --- Item Mais Movimentado ---
     Item: ID=A1 | Nome=Teclado Mecânico | Operacoes=3
+
+### Cenario 1 : 
+![WhatsApp Image 2025-11-14 at 19 31 06_c08aef2f](https://github.com/user-attachments/assets/8c8ff5bb-3a23-4584-8449-1420e0dfa515)
+
+
