@@ -208,8 +208,59 @@ lerLogs = catch leitura (\(_ :: IOException) -> return [])  -- Se der erro, reto
 
 --RELATORIOS (Analise de Logs)
 
+-- Filtra apenas logs que são falhas
+logsDeErro :: [LogEntry] -> [LogEntry]
+logsDeErro = filter isFalha  -- Mantém só os logs de erro
+  where
+    isFalha (LogEntry _ _ _ (Falha _)) = True  -- Se o status é Falha, é erro
+    isFalha _ = False  -- Caso contrário, não é erro
 
+-- Filtra apenas logs de sucesso
+logsDeSucesso :: [LogEntry] -> [LogEntry]
+logsDeSucesso = filter isSucesso  -- Mantém só os logs de sucesso
+  where
+    isSucesso (LogEntry _ _ _ Sucesso) = True  -- Se o status é Sucesso, mantém
+    isSucesso _ = False  -- Se não, tira
 
+-- Retorna histórico de logs de um item especifico
+historicoPorItem :: String -> [LogEntry] -> [LogEntry]
+historicoPorItem itemId = filter contemId  -- Filtra logs que mencionam esse ID
+  where
+    chave = "ID[" ++ itemId ++ "]"  -- Monta o padrão "ID[xxx]" pra buscar
+    contemId (LogEntry _ _ det _) = chave isInfixOf det  -- Verifica se o ID aparece no detalhe do log
+
+-- Retorna o item mais movimentado com ID e nome
+itemMaisMovimentado :: Inventario -> [LogEntry] -> Maybe (String, String, Int)
+itemMaisMovimentado inv logs =
+  case movimentos of  -- Pega a lista de movimentos ordenada
+    [] -> Nothing  -- Se não tem movimento rerotna nada
+    (((itemId, nomeItem), count):_) -> Just (itemId, nomeItem, count)  -- Pega o primeiro (que é o mais movimentado)
+  where
+    -- Filtra apenas operações de sucesso
+    logsRelevantes = filter isOperacao logs  -- Pega só logs de operações bem-sucedidas
+    isOperacao (LogEntry _ acao _ Sucesso) = acao elem [Add, Remove, Update]  -- Add, Remove ou Update com sucesso
+    isOperacao _ = False  -- Ignora falhas
+    
+    -- Extrai ID e Nome
+    extrairIdNome det =
+      let findBetween key s =  -- Função auxiliar pra achar texto entre colchetes
+            case dropWhile (not . isPrefixOf (key ++ "[") ) (tails s) of  -- Procura onde começa "ID[" ou "Nome["
+              (match:_) -> Just $ takeWhile (/= ']') (drop (length (key ++ "[")) match)  -- Pega o texto até o ]
+              _ -> Nothing
+          itemId = findBetween "ID" det  -- Extrai o ID
+          nomeCompleto = findBetween "Nome" det  -- Extrai o Nome
+      in case (itemId, nomeCompleto) of
+           (Just id', Just nome') -> Just (id', nome')  -- Retorna o par (ID, Nome)
+           _ -> Nothing  
+    
+    -- Extrai (ID, Nome) válidos
+    itens = [(id', nome') | log <- logsRelevantes, Just (id', nome') <- [extrairIdNome (detalhes log)]]  -- Lista de todos os (ID, Nome) dos logs
+    
+    -- Conta ocorrências por (ID, Nome)
+    contagens = map (\g -> case g of (x:_) -> (x, length g); [] -> error "grupo vazio") (group (sort itens))  -- Agrupa iguais e conta quantos tem
+    
+    -- Ordena por contagem decrescente
+    movimentos = sortBy (comparing (Down . snd)) contagens  -- Ordena do maior pro menor (quem tem mais operações fica em primeiro)
 
 
 
