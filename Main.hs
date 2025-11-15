@@ -227,7 +227,7 @@ historicoPorItem :: String -> [LogEntry] -> [LogEntry]
 historicoPorItem itemId = filter contemId  -- Filtra logs que mencionam esse ID
   where
     chave = "ID[" ++ itemId ++ "]"  -- Monta o padrão "ID[xxx]" pra buscar
-    contemId (LogEntry _ _ det _) = chave isInfixOf det  -- Verifica se o ID aparece no detalhe do log
+    contemId (LogEntry _ _ det _) = chave `isInfixOf` det  -- Verifica se o ID aparece no detalhe do log
 
 -- Retorna o item mais movimentado com ID e nome
 itemMaisMovimentado :: Inventario -> [LogEntry] -> Maybe (String, String, Int)
@@ -238,7 +238,7 @@ itemMaisMovimentado inv logs =
   where
     -- Filtra apenas operações de sucesso
     logsRelevantes = filter isOperacao logs  -- Pega só logs de operações bem-sucedidas
-    isOperacao (LogEntry _ acao _ Sucesso) = acao elem [Add, Remove, Update]  -- Add, Remove ou Update com sucesso
+    isOperacao (LogEntry _ acao _ Sucesso) = acao `elem` [Add, Remove, Update]  -- Add, Remove ou Update com sucesso
     isOperacao _ = False  -- Ignora falhas
     
     -- Extrai ID e Nome
