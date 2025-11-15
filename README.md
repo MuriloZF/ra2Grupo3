@@ -277,8 +277,9 @@ Comandos disponíveis: - `add` - `remove` - `delete` - `update` -
 
 ## Como executar no OnlineGDB
 
-1.  Abra: https://onlinegdb.com/IujVRtNv0K\
-2.  Clique **Run**.
+1.  Abra: https://onlinegdb.com
+2.  Em language, selecione haskell
+2.  Clique **Run**
 
 ------------------------------------------------------------------------
 
